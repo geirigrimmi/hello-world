@@ -1,0 +1,75 @@
+/*
+  Button test
+
+ Turns light on and off a on button pressed
+ * 10K resistor attached to pin 2 from groundl
+ pin 13 (on board led), when pressing a pushbutton attached to pin 2.
+
+ The circuit:
+ * LED attached from pin 13 to ground
+ * pushbutton attached to pin 2 from +5V
+
+ */
+
+// set pin numbers:
+const int buttonPin = 2;     // the number of the pushbutton pin
+const int buttonPin3 = 3;    // the number of the pushbutton3 pin
+const int ledPin =  13;      // the number of the LED pin
+
+// variables will change:
+int buttonState = 0;         // variable for reading the pushbutton status
+int ledState = 0; 
+int flowerType = 1;  //Or fetch this from memory
+static unsigned long last_action = millis();
+
+//Array for flowertypes
+byte my2dArray[5][3]={
+ {1,2,3},
+ {2,3,4},
+ {5,6,7},
+ {8,9,10},
+ {11,12,13}
+};
+
+void setup() {
+  // initialize the LED pin as an output:
+  pinMode(ledPin, OUTPUT);
+  // initialize the pushbutton pin as an input:
+  pinMode(buttonPin, INPUT);
+}
+
+bool buttonTime(unsigned long last_test) {
+  // Function to stall next button push until stalltime is reached
+  return ( millis() > last_test + 200);
+}
+
+void ledChange(){
+       
+       if (ledState == 1) {
+       // turn LED off:
+        ledState = 0;
+        digitalWrite(ledPin, LOW);
+       } else {
+       // turn LED on:
+        ledState = 1;
+        digitalWrite(ledPin, HIGH);
+      }
+      // Increase flowerType selection
+      if (flowerType < 5) {
+        ++flowerType;
+      } else {
+        flowerType = 1;
+      }
+}
+
+void loop() {
+if (buttonTime(last_action)){
+   // read the state of the pushbutton value:
+   buttonState = digitalRead(buttonPin);
+   // check if the pushbutton is pressed.
+   if (buttonState == HIGH) {
+      ledChange();
+      last_action = millis();
+      }
+   }
+}
