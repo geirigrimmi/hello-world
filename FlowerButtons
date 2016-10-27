@@ -1,5 +1,5 @@
 /*
-  Button test
+  Flowe Button
 
  Turns light on and off a on button pressed
  * 10K resistor attached to pin 2 from groundl
@@ -12,14 +12,15 @@
  */
 
 // set pin numbers:
-const int buttonPin = 2;     // the number of the pushbutton pin
+const int buttonPin2 = 2;    // the number of the pushbutton2 pin
 const int buttonPin3 = 3;    // the number of the pushbutton3 pin
+const int buttonPin4 = 4;    // the number of the pushbutton4 pin
 const int ledPin =  13;      // the number of the LED pin
 
 // variables will change:
-int buttonState = 0;         // variable for reading the pushbutton status
 int ledState = 0; 
 int flowerType = 1;  //Or fetch this from memory
+int potLiters = 1;   //Initial potsize in Liters
 static unsigned long last_action = millis();
 
 //Array for flowertypes
@@ -32,10 +33,19 @@ byte my2dArray[5][3]={
 };
 
 void setup() {
+  //start serial connection
+  Serial.begin(9600);
+  // Initial message to display
+  Serial.print("Flowertype:  ");
+  Serial.println(flowerType);
+  Serial.print("Potsize L:  ");
+  Serial.println(potLiters);
   // initialize the LED pin as an output:
   pinMode(ledPin, OUTPUT);
   // initialize the pushbutton pin as an input:
-  pinMode(buttonPin, INPUT);
+  pinMode(buttonPin2, INPUT);
+  pinMode(buttonPin3, INPUT);
+  pinMode(buttonPin4, INPUT);
 }
 
 bool buttonTime(unsigned long last_test) {
@@ -60,15 +70,47 @@ void ledChange(){
       } else {
         flowerType = 1;
       }
+    //print out the value of the flowerType
+    Serial.print("Flowertype:  ");
+    Serial.println(flowerType);
 }
+void PotLiters(int buttonPin){
+       
+       if (ledState == 1) {
+       // turn LED off:
+        ledState = 0;
+        digitalWrite(ledPin, LOW);
+       } else {
+       // turn LED on:
+        ledState = 1;
+        digitalWrite(ledPin, HIGH);
+      }
+      // Increase flowerType selection
+      if (buttonPin == 3) {
+        ++potLiters;
+      } else if (potLiters <= 1) { //Do nothing 
+      } else if (buttonPin == 4) {
+        --potLiters;
+      }
+    //print out the value of the flowerType
+    Serial.print("Potsize L:  ");
+    Serial.println(potLiters);
+}
+
 
 void loop() {
 if (buttonTime(last_action)){
-   // read the state of the pushbutton value:
-   buttonState = digitalRead(buttonPin);
    // check if the pushbutton is pressed.
-   if (buttonState == HIGH) {
+   if (digitalRead(buttonPin2) == HIGH) {
       ledChange();
+      last_action = millis();
+      }
+   if (digitalRead(buttonPin3) == HIGH) {
+      PotLiters(buttonPin3);
+      last_action = millis();
+      }
+   if (digitalRead(buttonPin4) == HIGH) {
+      PotLiters(buttonPin4);
       last_action = millis();
       }
    }
