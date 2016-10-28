@@ -97,17 +97,16 @@ void PotLiters(int buttonPin){
       float pad = 0.5;
       if ( potLiters < 2.5) {
         int p = 0.8+potLiters;
-        pad = (float) p/10;
-      }
-            
+        pad = constrain((float) p/10,0.1,0.5);
+      }       
       if (buttonPin == 3) {
         potLiters = potLiters + pad;
-      } else if (potLiters < 0.1) { //Do nothing 
       } else if (buttonPin == 4) {
         potLiters = potLiters - pad;
       }
-    plantArray[flowerType][0] = potLiters;
-    //print out the value of the flowerType
+    // Uppdate array from 0.1 to 10 liters  
+    plantArray[flowerType][0] = constrain(potLiters,0.1,10);
+    // print out the value of the flowerType
     printPlantArray();
 }
 
