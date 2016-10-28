@@ -43,10 +43,6 @@ void setup() {
   Serial.begin(9600);
   // Initial message to display
   printPlantArray();
-  //Serial.print("Flowertype:  ");
-  //Serial.println(flowerType);
-  //Serial.print("Potsize L:  ");
-  //Serial.println(potLiters);
   // initialize the LED pin as an output:
   pinMode(ledPin, OUTPUT);
   // initialize the pushbutton pin as an input:
@@ -56,8 +52,7 @@ void setup() {
 }
 
 void printPlantArray() {
-      
-    //print out the value of the flowerType
+  //print out the value of the flowerType
     Serial.print("Flowertype:  ");
     Serial.print(flowerType);
     Serial.print("   Potsize:  ");
@@ -74,19 +69,19 @@ bool buttonTime(unsigned long last_test) {
 }
 
 void ledChange(){
-       if (ledState == 1) {
-       // turn LED off:
+    if (ledState == 1) {
+    // turn LED off:
         ledState = 0;
         digitalWrite(ledPin, LOW);
-       } else {
-       // turn LED on:
+    } else {
+    // turn LED on:
         ledState = 1;
         digitalWrite(ledPin, HIGH);
     }
 }
 
 void flowerTypeChange(){
-      // Increase flowerType selection
+     // Increase flowerType selection
       if (flowerType < 4) {
         ++flowerType;
       } else {
