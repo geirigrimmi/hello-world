@@ -29,7 +29,7 @@ int flowerType = 0;  //Or fetch this from memory
 static unsigned long last_action = millis();
 
 //Zero based array for flowertypes
-//Potsize, Humidity, Dry days
+//Pot size, Humidity, Dry days
 float plantArray[5][3]={
  {0.2,3,0.5}, 
  {0.5,2,1},
@@ -53,9 +53,9 @@ void setup() {
 
 void printPlantArray() {
   //print out the value of the flowerType
-    Serial.print("Flowertype:  ");
+    Serial.print("Flower type:  ");
     Serial.print(flowerType);
-    Serial.print("   Potsize:  ");
+    Serial.print("   Pot size L:  ");
     Serial.print(plantArray[flowerType][0]);
     Serial.print("   Humidity:  ");
     Serial.print(plantArray[flowerType][1]);
