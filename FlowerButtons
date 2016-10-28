@@ -24,33 +24,48 @@ const int ledPin =  13;      // the number of the LED pin
 
 // variables will change:
 int ledState = 0; 
-int flowerType = 1;  //Or fetch this from memory
-int potLiters = 1;   //Initial potsize in Liters
+int flowerType = 0;  //Or fetch this from memory
+//int potLiters = 1;   //Initial potsize in Liters
 static unsigned long last_action = millis();
 
-//Array for flowertypes
-byte my2dArray[5][3]={
- {1,2,3},
- {2,3,4},
- {5,6,7},
- {8,9,10},
- {11,12,13}
+//Zero based array for flowertypes
+//Potsize, Humidity, Dry days
+float plantArray[5][3]={
+ {0.2,3,0.5}, 
+ {0.5,2,1},
+ {1,1,2},
+ {2,3,5},
+ {3,2,7}
 };
 
 void setup() {
   //start serial connection
   Serial.begin(9600);
   // Initial message to display
-  Serial.print("Flowertype:  ");
-  Serial.println(flowerType);
-  Serial.print("Potsize L:  ");
-  Serial.println(potLiters);
+  printPlantArray();
+  //Serial.print("Flowertype:  ");
+  //Serial.println(flowerType);
+  //Serial.print("Potsize L:  ");
+  //Serial.println(potLiters);
   // initialize the LED pin as an output:
   pinMode(ledPin, OUTPUT);
   // initialize the pushbutton pin as an input:
   pinMode(buttonPin2, INPUT);
   pinMode(buttonPin3, INPUT);
   pinMode(buttonPin4, INPUT);
+}
+
+void printPlantArray() {
+      
+    //print out the value of the flowerType
+    Serial.print("Flowertype:  ");
+    Serial.print(flowerType);
+    Serial.print("   Potsize:  ");
+    Serial.print(plantArray[flowerType][0]);
+    Serial.print("   Humidity:  ");
+    Serial.print(plantArray[flowerType][1]);
+    Serial.print("   Dry days:  ");
+    Serial.println(plantArray[flowerType][2]);
 }
 
 bool buttonTime(unsigned long last_test) {
@@ -72,27 +87,33 @@ void ledChange(){
 
 void flowerTypeChange(){
       // Increase flowerType selection
-      if (flowerType < 5) {
+      if (flowerType < 4) {
         ++flowerType;
       } else {
-        flowerType = 1;
+        flowerType = 0;
       }
-    //print out the value of the flowerType
-    Serial.print("Flowertype:  ");
-    Serial.println(flowerType);
+     printPlantArray();
 }
 
 void PotLiters(int buttonPin){
-      // Increase or decrease potsize in Liters
-      if (buttonPin == 3) {
-        ++potLiters;
-      } else if (potLiters <= 1) { //Do nothing 
-      } else if (buttonPin == 4) {
-        --potLiters;
+    // Increase or decrease potsize in Liters
+      float potLiters = plantArray[flowerType][0];
+    //set the pad size (lower for low numbers)
+      float pad = 0.5;
+      if ( potLiters < 2.5) {
+        int p = 0.8+potLiters;
+        pad = (float) p/10;
       }
+            
+      if (buttonPin == 3) {
+        potLiters = potLiters + pad;
+      } else if (potLiters <= 0.1) { //Do nothing 
+      } else if (buttonPin == 4) {
+        potLiters = potLiters - pad;
+      }
+    plantArray[flowerType][0] = potLiters;
     //print out the value of the flowerType
-    Serial.print("Potsize L:  ");
-    Serial.println(potLiters);
+    printPlantArray();
 }
 
 
