@@ -102,7 +102,7 @@ void PotLiters(int buttonPin){
             
       if (buttonPin == 3) {
         potLiters = potLiters + pad;
-      } else if (potLiters <= 0.1) { //Do nothing 
+      } else if (potLiters < 0.1) { //Do nothing 
       } else if (buttonPin == 4) {
         potLiters = potLiters - pad;
       }
