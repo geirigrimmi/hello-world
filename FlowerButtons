@@ -38,6 +38,17 @@ float plantArray[5][3]={
  {3,2,7}
 };
 
+
+//Value names
+String valueNameArray[5][2]={
+ {"Flower 1","???  "},  //0 
+ {"Flower 2","Wet  "},  //1
+ {"Flower 3","Moist"},  //2
+ {"Flower 4","Dry  "},  //3
+ {"Flower 5","???  "}   //4
+};
+
+
 void setup() {
   //start serial connection
   Serial.begin(9600);
@@ -53,12 +64,13 @@ void setup() {
 
 void printPlantArray() {
   //print out the value of the flowerType
-    Serial.print("Flower type:  ");
-    Serial.print(flowerType);
+    Serial.print(valueNameArray[flowerType][0]);
+    //Serial.print(flowerType);
     Serial.print("   Pot size L:  ");
     Serial.print(plantArray[flowerType][0]);
     Serial.print("   Humidity:  ");
-    Serial.print(plantArray[flowerType][1]);
+    Serial.print(valueNameArray[(int) plantArray[flowerType][1]][1]);
+    //Serial.print(plantArray[flowerType][1]);
     Serial.print("   Dry days:  ");
     Serial.println(plantArray[flowerType][2]);
 }
@@ -69,6 +81,9 @@ bool buttonTime(unsigned long last_test) {
 }
 
 void ledChange(){
+//  ledState = !ledState;
+//  digitalWrite(ledPin, ledState);
+
     if (ledState == 1) {
     // turn LED off:
         ledState = 0;
@@ -110,24 +125,67 @@ void PotLiters(int buttonPin){
     printPlantArray();
 }
 
+//Bæti þessari við frá Erni
+bool timeToAct(unsigned long last_action, unsigned long current_time, unsigned long interval) {
+  // Function to calculate whether or not it is time to act based on state of
+  // millisecond timers. We need this because millis() rolls over every ~50 days, and this
+  // handles that safely.
+  // If any time exceeding interval has passed between last_action and current_time, this function
+  // will return true
+  return (current_time - last_action >= interval);
+}
 
 void loop() {
+  // Initialize the variables we need
+  static unsigned long factor = 1000;
+  static unsigned long watering_interval = plantArray[flowerType][2] *factor; //Dry Days * 1000 for testing
+  static unsigned long last_watering = 0 - watering_interval;
+  static unsigned long watering_amount = plantArray[flowerType][0] *factor; // Pot size L * 1000 for testing
+  
+
+
+// Do some work
+if (ledState == 0) {
+  // If light (pumping) is off
+  if (timeToAct(last_watering, millis(), watering_interval)) {
+    Serial.print("Start pumping, Watering interval: ");
+    Serial.println(watering_interval);
+    ledChange();
+    last_watering =  millis();
+  }
+   
+}
+
+if (ledState == 1) {
+  // If light (pumping) is on
+  if (timeToAct(last_watering, millis(), watering_amount)) {
+    // if water amount is reacht
+    Serial.print("Stop  pumping, Water amount: ");
+    Serial.println(watering_amount);
+    ledChange();
+    last_watering =  millis();
+  }
+}
+
+// Brlow is only for buttons
 if (buttonTime(last_action)){
    // check if the pushbutton is pressed.
    if (digitalRead(buttonPin2) == HIGH) {
-      ledChange();
+    //Flower Type button pressed
       flowerTypeChange();
       last_action = millis();
       }
    if (digitalRead(buttonPin3) == HIGH) {
-      ledChange();
+    // increase button pressed
       PotLiters(buttonPin3);
       last_action = millis();
       }
    if (digitalRead(buttonPin4) == HIGH) {
-      ledChange();
+    //Decrease button pressed
       PotLiters(buttonPin4);
       last_action = millis();
       }
+    watering_interval = plantArray[flowerType][2] *factor;
+    watering_amount = plantArray[flowerType][0] *factor;
    }
 }
